@@ -28,7 +28,10 @@ export default function ChatPage() {
   // 自动滚动到底部
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      const scrollElement = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]')
+      if (scrollElement) {
+        scrollElement.scrollTop = scrollElement.scrollHeight
+      }
     }
   }, [messages])
 
@@ -202,17 +205,18 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col">
-      <div className="mb-4">
+    <div className="flex flex-col h-full max-h-[calc(100vh-8rem)]">
+      <div className="mb-4 flex-shrink-0">
         <h1 className="text-3xl font-bold text-gray-900">智能对话</h1>
         <p className="text-gray-600 mt-2">
           描述您想要创建的应用，AI 将自动生成并部署
         </p>
       </div>
 
-      <Card className="flex-1 flex flex-col overflow-hidden">
+      <Card className="flex-1 flex flex-col min-h-0">
         {/* 消息列表 */}
-        <ScrollArea className="flex-1 p-6" ref={scrollRef}>
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full p-6" ref={scrollRef}>
           {messages.length === 0 ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center space-y-4">
@@ -263,9 +267,10 @@ export default function ChatPage() {
             </div>
           )}
         </ScrollArea>
+        </div>
 
         {/* 输入区域 */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-gray-200 p-4 flex-shrink-0 bg-white">
           <div className="flex space-x-2">
             <Textarea
               placeholder="描述您想要创建的应用..."
