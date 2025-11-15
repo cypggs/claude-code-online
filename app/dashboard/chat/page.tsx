@@ -107,7 +107,8 @@ export default function ChatPage() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to send message')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: 请求失败`)
       }
 
       // 处理 SSE 流式响应
@@ -119,6 +120,7 @@ export default function ChatPage() {
       }
 
       let accumulatedContent = ''
+      let hasError = false
 
       while (true) {
         const { done, value } = await reader.read()
@@ -130,11 +132,28 @@ export default function ChatPage() {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(6)
+
             if (data === '[DONE]') {
+              console.log('Stream completed successfully')
               break
             }
+
+            if (data === '[ERROR]') {
+              hasError = true
+              break
+            }
+
             try {
               const parsed = JSON.parse(data)
+
+              if (parsed.error) {
+                // 服务器返回错误
+                console.error('Server error:', parsed.error)
+                toast.error(parsed.error)
+                hasError = true
+                break
+              }
+
               if (parsed.content) {
                 accumulatedContent += parsed.content
                 setMessages((prev) =>
@@ -147,9 +166,19 @@ export default function ChatPage() {
               }
             } catch (e) {
               // 忽略解析错误
+              console.warn('Failed to parse SSE data:', data)
             }
           }
         }
+
+        if (hasError) {
+          break
+        }
+      }
+
+      // 如果有错误且没有内容，移除助手消息
+      if (hasError && !accumulatedContent) {
+        setMessages((prev) => prev.filter((msg) => msg.id !== assistantId))
       }
     } catch (error: any) {
       if (error.name === 'AbortError') {
