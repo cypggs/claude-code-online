@@ -5,7 +5,7 @@ export const anthropic = new Anthropic({
   baseURL: process.env.ANTHROPIC_BASE_URL,
 })
 
-export const CLAUDE_MODEL = 'MiniMax-M2'
+export const CLAUDE_MODEL = 'kimi-k2-thinking-turbo'
 
 export async function createChatStream(
   messages: { role: 'user' | 'assistant'; content: string }[],

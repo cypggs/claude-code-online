@@ -20,7 +20,7 @@ Claude Code Online 是一个在线平台，让用户可以通过聊天界面使�
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS, shadcn/ui
 - **Backend**: Next.js API Routes (Serverless)
 - **Database**: Supabase (PostgreSQL)
-- **AI**: Claude Sonnet 4.5 / MiniMax M2 (Custom Endpoint)
+- **AI**: Claude Sonnet 4.5 / Kimi K2 Thinking Turbo (Custom Endpoint)
 - **Email**: Nodemailer (企业微信 SMTP)
 - **Deployment**: Vercel
 
