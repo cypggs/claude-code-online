@@ -67,6 +67,11 @@ export async function GET() {
       // 发送测试请求
       const startTime = Date.now()
 
+      // 隐藏完整密钥，只显示前后几位
+      const maskedKey = apiKey.length > 20
+        ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 8)}`
+        : '***'
+
       const stream = await anthropic.messages.create({
         model: CLAUDE_MODEL,
         max_tokens: 10,
@@ -93,7 +98,7 @@ export async function GET() {
       if (responseReceived) {
         checks.checks.claude_api = {
           status: 'ok',
-          details: `API 连接正常，响应时间: ${duration}ms，端点: ${baseURL || 'https://api.anthropic.com'}`,
+          details: `API 连接正常 | 模型: ${CLAUDE_MODEL} | 响应时间: ${duration}ms | 端点: ${baseURL || 'https://api.anthropic.com'} | 密钥: ${maskedKey}`,
         }
       } else {
         checks.checks.claude_api = {
